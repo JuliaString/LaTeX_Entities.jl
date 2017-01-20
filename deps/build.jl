@@ -28,12 +28,13 @@ const element_types = ("mathlatex", "AMS", "IEEE", "latex")
 
 function get_math_symbols(dpath, fname)
     lname = joinpath(datapath, fname)
-    println("Save to: ", lname)
     if isfile(fname)
-        vers = (now(), lname)
+        println("Loaded: ", lname)
+        vers = lname
     else
-        vers = (now(), string(dpath, fname))
-        download(vers[2], lname)
+        vers = string(dpath, fname)
+        download(vers, lname)
+        println("Saved to: ", lname)
     end
     xdoc = parse_file(lname)
 
@@ -66,7 +67,7 @@ function get_math_symbols(dpath, fname)
                         typ = 0
                     else
                         typ = 1
-                        push!(latex_sym[ind], L => U)
+                        push!(latex_sym[ind], string(L) => U)
                     end
                     push!(info, (ind, typ, L, U, empty_str))
                 end
@@ -78,12 +79,13 @@ end
 
 function add_math_symbols(dpath, fname)
     lname = joinpath(datapath, fname)
-    println("Save to: ", lname)
     if isfile(fname)
-        vers = (now(), lname)
+        println("Loaded: ", lname)
+        vers = lname
     else
-        vers = (now(), string(dpath, fname))
-        download(vers[2], lname)
+        vers = string(dpath, fname)
+        download(vers, lname)
+        println("Saved to: ", lname)
     end
     latex_sym = Pair{String, String}[]
     info = Tuple{Int, Int, String, String, String}[]
@@ -103,7 +105,7 @@ function add_math_symbols(dpath, fname)
             else
                 typ = 3
             end
-            typ != 0 && push!(latex_sym, nam => string(ch))
+            typ != 0 && push!(latex_sym, string(nam) => string(ch))
             push!(info, (2, typ, nam, string(ch), x[5]))
         end
     end
@@ -196,8 +198,8 @@ function make_tables()
     vec32, ind32, base2c = sortsplit!(indvec, l32, base32)
     vec2c, ind2c, basefn = sortsplit!(indvec, l2c, base2c)
 
-    (VER,  base32%UInt32, base2c%UInt32,
-     StrTable(symnam[srtnam]), indvec,
+    (VER, string(now()), string(ver1, ",", ver2),
+     base32%UInt32, base2c%UInt32, StrTable(symnam[srtnam]), indvec,
      vec16, ind16, vec32, ind32, vec2c, ind2c),
     (ver1, ver2), (inf1, inf2)
 end

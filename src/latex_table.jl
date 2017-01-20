@@ -1,7 +1,9 @@
-VER = UInt32(0)
+VER = UInt32(1)
 
 immutable LaTeX_Table{T}
     ver::UInt32
+    tim::String
+    inf::String
     base32::UInt32
     base2c::UInt32
     nam::StrTable{T}
