@@ -1,6 +1,6 @@
 VER = UInt32(1)
 
-immutable LaTeX_Table{T}
+immutable LaTeX_Table{T} <: AbstractEntityTable
     ver::UInt32
     tim::String
     inf::String

@@ -1,4 +1,5 @@
-# License is MIT: http://julialang.org/license
+# License is MIT: https://github.com/JuliaString/LaTeX_Entities/LICENSE.md
+#
 # Portions of this are based on code from julia/base/latex_symbols.jl
 #
 # Mapping from LaTeX math symbol to the corresponding Unicode codepoint.
@@ -8,15 +9,17 @@ println("Running LaTeX build in ", pwd())
 
 using LightXML
 using StrTables
-include("../src/latex_table.jl")
+
+VER = UInt32(1)
 
 #const dpath = "http://www.w3.org/Math/characters/"
 const dpath = "http://www.w3.org/2003/entities/2007xml/"
 const fname = "unicode.xml"
 #const lpath = "http://mirror.math.ku.edu/tex-archive/macros/latex/contrib/unicode-math/"
-#const lpath = "http://mirror.unl.edu/ctan/macros/latex/contrib/unicode-math/"
 const lpath = "https://raw.githubusercontent.com/wspr/unicode-math/master/"
 const lname = "unicode-math-table.tex"
+
+const disp = [false]
 
 # Get manual additions to the tables
 include("../src/manual_latex.jl")
@@ -52,14 +55,15 @@ function get_math_symbols(dpath, fname)
             for (ind, el) in enumerate(element_types)
                 latex = find_element(ce, el)
                 if latex == nothing
-                    # println("##\t", attribute(ce, "id"), "\t", ce)
+                    disp[] && println("##\t", attribute(ce, "id"), "\t", ce)
                     continue
                 end
                 L = strip(content(latex))
                 id = attribute(ce, "id")
                 U = string(map(s -> Char(parse(Int, s, 16)), split(id[2:end], "-"))...)
                 mtch = ismatch(r"^\\[A-Za-z][A-Za-z0-9]*(\{[A-Za-z0-9]\})?$", L)
-                println("#", count += 1, "\t", mtch%Int, " id: ", id, "\tU: ", U, "\t", L)
+                disp[] &&
+                    println("#", count += 1, "\t", mtch%Int, " id: ", id, "\tU: ", U, "\t", L)
                 if mtch
                     L = L[2:end] # remove initial \
                     if length(U) == 1 && isascii(U[1])
@@ -130,8 +134,8 @@ function make_tables()
     sym1, ver1, inf1 = get_math_symbols(dpath, fname)
     sym2, ver2, inf2 = add_math_symbols(lpath, lname)
 
-    latex_sym = [manual_latex, sym2, sym1...]
-    et = ("manual", "tex", element_types...)
+    latex_sym = [manual_latex, sym1[1], sym2, sym1[2:end]...]
+    et = ("manual", element_types[1], "tex", element_types[2:end]...)
 
     latex_set = Dict{String,String}()
 

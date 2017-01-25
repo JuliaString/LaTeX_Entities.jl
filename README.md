@@ -6,7 +6,7 @@
 
 [![codecov.io](http://codecov.io/github/JuliaString/LaTeX_Entities.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaString/LaTeX_Entities.jl?branch=master)
 
-LaTeX_Entities.jl: Support for using LaTex names for characters
+LaTeX_Entities.jl: Support for using LaTeX entity names for characters
 ====================================================================
 
 This builds tables for looking up LaTeX names and returning the Unicode character(s),
