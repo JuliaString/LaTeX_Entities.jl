@@ -71,7 +71,7 @@ function get_math_symbols(dpath, fname)
                         typ = 0
                     else
                         typ = 1
-                        push!(latex_sym[ind], string(L) => U)
+                        push!(latex_sym[ind], String(L) => U)
                     end
                     push!(info, (ind, typ, L, U, empty_str))
                 end
@@ -98,7 +98,7 @@ function add_math_symbols(dpath, fname)
             x = map(s -> rstrip(s, [' ','\t','\n']),
                     split(replace(L, r"[{}\"]+", "\t"), "\t"))
             ch = Char(parse(Int, x[2], 16))
-            nam = x[3][2:end]
+            nam = String(x[3][2:end])
             startswith(nam, "math") && (nam = nam[5:end])
             if isascii(ch)
                 typ = 0 # ASCII
@@ -109,7 +109,7 @@ function add_math_symbols(dpath, fname)
             else
                 typ = 3
             end
-            typ != 0 && push!(latex_sym, string(nam) => string(ch))
+            typ != 0 && push!(latex_sym, nam => string(ch))
             push!(info, (2, typ, nam, string(ch), x[5]))
         end
     end
