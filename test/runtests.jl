@@ -9,6 +9,7 @@ LE = LaTeX_Entities
 @testset "LaTeX_Entities" begin
 
 @testset "lookupname" begin
+    @test LE.lookupname(SubString("My name is Spock", 12)) == ""
     @test LE.lookupname("foobar")   == ""
     @test LE.lookupname("dagger")   == "†" # \u2020
     @test LE.lookupname("mscrl")    == "𝓁" # \U1f4c1
@@ -17,6 +18,7 @@ end
 
 @testset "matches" begin
     @test isempty(LE.matches("\U1f596"))
+    @test isempty(LE.matches(SubString("My name is \U1f596", 12)))
     for (chrs, exp) in (("√", ["sqrt", "surd"]),
                         ("𝓁", ["mscrl"]),
                         ("⩽̸", ["nleqslant"]))
@@ -28,6 +30,7 @@ end
 
 @testset "longestmatches" begin
     @test isempty(LE.longestmatches("\U1f596 abcd"))
+    @test isempty(LE.longestmatches(SubString("My name is \U1f596", 12)))
     for (chrs, exp) in (("√abcd", ["sqrt", "surd"]),
                         ("𝓁abcd", ["mscrl"]),
                         ("⩽̸abcd", ["nleqslant"]))
@@ -39,6 +42,7 @@ end
 
 @testset "completions" begin
     @test isempty(LE.completions("ScottPaulJones"))
+    @test isempty(LE.completions(SubString("My name is Scott", 12)))
     for (chrs, exp) in (("A", ["AA", "AE", "Alpha"]),
                         ("mtt", ["mtta", "mttthree", "mttzero"]),
                         ("nleq", ["nleq", "nleqslant"]))
