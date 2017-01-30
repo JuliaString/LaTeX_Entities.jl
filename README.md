@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/JuliaString/LaTeX_Entities.jl.svg?branch=master)](https://travis-ci.org/JuliaString/LaTeX_Entities.jl)
 
-[![Coverage Status](https://coveralls.io/repos/JuliaString/LaTeX_Entities.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaString/LaTeX_Entities.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaString/LaTeX_Entities.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaString/LaTeX_Entities.jl?branch=master)
 
 [![codecov.io](http://codecov.io/github/JuliaString/LaTeX_Entities.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaString/LaTeX_Entities.jl?branch=master)
 

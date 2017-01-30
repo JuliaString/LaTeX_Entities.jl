@@ -17,6 +17,7 @@ LE = LaTeX_Entities
 end
 
 @testset "matches" begin
+    @test isempty(LE.matches(""))
     @test isempty(LE.matches("\U1f596"))
     @test isempty(LE.matches(SubString("My name is \U1f596", 12)))
     for (chrs, exp) in (("√", ["sqrt", "surd"]),
