@@ -13,6 +13,10 @@ const manual_latex = [
     "llbracket"   => "⟦",      # synonym of \lBrack
     "rrbracket"   => "⟧",      # synonym of \rBrack
     "xor"         => "⊻",      # synonym of \veebar
+    "iff"         => "⟺",
+    "implies"     => "⟹",
+    "impliedby"   => "⟸",
+    "to"          => "→",
 
     # Misc. Math and Physics
     "del"         => "∇",      # synonym of \nabla (combining character)
