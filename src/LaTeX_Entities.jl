@@ -17,7 +17,7 @@ using StrTables
 
 VER = UInt32(1)
 
-immutable LaTeX_Table{T} <: AbstractEntityTable
+struct LaTeX_Table{T} <: AbstractEntityTable
     ver::UInt32
     tim::String
     inf::String
@@ -49,7 +49,7 @@ function _get_str(ind)
     string(Char(val>>>16), Char(val&0xffff))
 end
     
-function _get_strings{T}(val::T, tab::Vector{T}, ind::Vector{UInt16})
+function _get_strings(val::T, tab::Vector{T}, ind::Vector{UInt16}) where {T}
     rng = searchsorted(tab, val)
     isempty(rng) && return _empty_str_vec
     _tab.nam[ind[rng]]
@@ -60,10 +60,11 @@ function lookupname(str::AbstractString)
     isempty(rng) ? _empty_str : _get_str(_tab.ind[rng.start])
 end
 
-matchchar(ch::Char) =
-    (ch <= '\uffff'
+matchchar(ch::UInt32) =
+    (ch <= 0x0ffff
      ? _get_strings(ch%UInt16, _tab.val16, _tab.ind16)
-     : (ch <= '\U1ffff' ? _get_strings(ch%UInt16, _tab.val32, _tab.ind32) : _empty_str_vec))
+     : (ch <= 0x1ffff ? _get_strings(ch%UInt16, _tab.val32, _tab.ind32) : _empty_str_vec))
+matchchar(ch::Char) = matchchar(UInt32(ch))
 
 matches(str::AbstractString) = matches(convert(Vector{Char}, str))
 function matches(vec::Vector{Char})
@@ -90,4 +91,4 @@ end
 completions(str::String) = StrTables.matchfirst(_tab.nam, str)
 completions(str::AbstractString) = completions(convert(String, str))
 
-end # module
+end # module LaTeX_Entities
