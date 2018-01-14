@@ -60,8 +60,8 @@ function get_math_symbols(dpath, fname)
                 end
                 L = strip(content(latex))
                 id = attribute(ce, "id")
-                U = string(map(s -> Char(parse(Int, s, 16)), split(id[2:end], "-"))...)
-                mtch = ismatch(r"^\\[A-Za-z][A-Za-z0-9]*(\{[A-Za-z0-9]\})?$", L)
+                U = string(map(s -> Char(parse(UInt32, s, 16)), split(id[2:end], "-"))...)
+                mtch = _contains(L, r"^\\[A-Za-z][A-Za-z0-9]*(\{[A-Za-z0-9]\})?$")
                 disp[] &&
                     println("#", count += 1, "\t", mtch%Int, " id: ", id, "\tU: ", U, "\t", L)
                 if mtch
@@ -95,8 +95,9 @@ function add_math_symbols(dpath, fname)
     info = Tuple{Int, Int, String, String, String}[]
     open(lname) do f
         for L in eachline(f)
+            (isempty(L) || L[1] == '%') && continue
             x = map(s -> rstrip(s, [' ','\t','\n']),
-                    split(replace(L, r"[{}\"]+", "\t"), "\t"))
+                    split(_replace(L, r"[{}\"]+" => "\t"), "\t"))
             ch = Char(parse(Int, x[2], 16))
             nam = String(x[3][2:end])
             startswith(nam, "math") && (nam = nam[5:end])
@@ -114,20 +115,6 @@ function add_math_symbols(dpath, fname)
         end
     end
     latex_sym, vers, info
-end
-
-function sortsplit!{T}(index::Vector{UInt16}, vec::Vector{Tuple{T, UInt16}}, base)
-    sort!(vec)
-    len = length(vec)
-    valvec = Vector{T}(len)
-    indvec = Vector{UInt16}(len)
-    for (i, val) in enumerate(vec)
-        valvec[i], ind = val
-        indvec[i] = ind
-        index[ind] = UInt16(base + i)
-    end
-    base += len
-    valvec, indvec, base
 end
 
 function make_tables()
@@ -167,25 +154,28 @@ function make_tables()
     srtval = symval[srtnam] # Values, sorted the same as srtnam
 
     # BMP characters
-    l16 = Vector{Tuple{UInt16, UInt16}}()
+    l16 = Tuple{UInt16, UInt16}[]
     # non-BMP characters (in range 0x10000 - 0x1ffff)
-    l32 = Vector{Tuple{UInt16, UInt16}}()
+    l32 = Tuple{UInt16, UInt16}[]
     # two characters packed into UInt32, first character in high 16-bits
-    l2c = Vector{Tuple{UInt32, UInt16}}()
+    l2c = Tuple{UInt32, UInt16}[]
 
     for i in eachindex(srtnam)
-        chrs = convert(Vector{Char}, srtval[i])
-        length(chrs) > 2 && error("Too long sequence of characters $chrs")
-        if length(chrs) == 2
-            (chrs[1] > '\uffff' || chrs[2] > '\uffff') &&
-                error("Character $(chrs[1]) or $(chrs[2]) > 0xffff")
-            push!(l2c, (chrs[1]%UInt32<<16 | chrs[2]%UInt32, i))
-        elseif chrs[1] > '\U1ffff'
-            error("Character $(chrs[1]) too large: $(UInt32(chrs[1]))")
-        elseif chrs[1] > '\uffff'
-            push!(l32, ((chrs[1]-0x10000)%UInt32, i))
+        chrs = srtval[i]
+        len = length(chrs)
+        len > 2 && error("Too long sequence of characters $chrs")
+        ch1 = chrs[1]%UInt32
+        if len == 2
+            ch2 = chrs[end]%UInt32
+            (ch1 > 0x0ffff || ch2 > 0x0ffff) &&
+                error("Character $ch1 or $ch2 > 0xffff")
+            push!(l2c, (ch1<<16 | ch2, i))
+        elseif ch1 > 0x1ffff
+            error("Character $ch1 too large")
+        elseif ch1 > 0x0ffff
+            push!(l32, (ch1-0x10000, i))
         else
-            push!(l16, (chrs[1]%UInt16, i))
+            push!(l16, (ch1%UInt16, i))
         end
     end
 
@@ -197,20 +187,27 @@ function make_tables()
     # in each table to the index into the name table (so that we can find multiple names for
     # each character)
 
-    indvec = Vector{UInt16}(length(srtnam))
+    indvec = create_vector(UInt16, length(srtnam))
     vec16, ind16, base32 = sortsplit!(indvec, l16, 0)
     vec32, ind32, base2c = sortsplit!(indvec, l32, base32)
     vec2c, ind2c, basefn = sortsplit!(indvec, l2c, base2c)
 
-    (VER, string(now()), string(ver1, ",", ver2),
-     base32%UInt32, base2c%UInt32, StrTable(symnam[srtnam]), indvec,
-     vec16, ind16, vec32, ind32, vec2c, ind2c),
-    (ver1, ver2), (inf1, inf2)
+    ((VER, string(now()), string(ver1, ",", ver2),
+      base32%UInt32, base2c%UInt32, StrTable(symnam[srtnam]), indvec,
+      vec16, ind16, vec32, ind32, vec2c, ind2c),
+     (ver1, ver2), (inf1, inf2))
 end
 
 println("Creating tables")
-tup, ver, inf = make_tables()
+tup = nothing
+try
+    global tup
+    tup = make_tables()
+catch ex
+    println(sprint(showerror, ex, catch_backtrace()))
+end
 savfile = joinpath(datapath, "latex.dat")
 println("Saving tables to ", savfile)
-StrTables.save(savfile, tup)
+StrTables.save(savfile, tup[1])
 println("Done")
+
