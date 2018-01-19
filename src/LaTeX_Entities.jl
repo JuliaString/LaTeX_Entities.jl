@@ -34,7 +34,7 @@ struct LaTeX_Table{T} <: AbstractEntityTable
 end
 
 function __init__()
-    const global _tab =
+    global _tab =
         LaTeX_Table(StrTables.load(joinpath(Pkg.dir("LaTeX_Entities"), "data", "latex.dat"))...)
     nothing
 end
