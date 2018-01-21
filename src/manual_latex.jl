@@ -17,6 +17,7 @@ const manual_latex = [
     "implies"     => "⟹",
     "impliedby"   => "⟸",
     "to"          => "→",
+    "euler"       => "ℯ",
 
     # Misc. Math and Physics
     "del"         => "∇",      # synonym of \nabla (combining character)
