@@ -1,10 +1,12 @@
 # Generate completions.json
 using LaTeX_Entities
+const LE = LaTeX_Entities
 
 open("completions.json", "w") do io
     println(io, "{")
-    for nam in LaTeX_Entities._tab.nam
-        println(io, "  \", word, ""\": \"", LaTeX_Entities.lookupname(nam), ""\",")
+    def = LE.default
+    for nam in def.nam
+        println(io, "  \", word, ""\": \"", LE.lookupname(def, nam), ""\",")
     end
     skip(io, -2)
     println(io)
