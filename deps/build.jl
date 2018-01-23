@@ -60,7 +60,7 @@ function get_math_symbols(dpath, fname)
                 end
                 L = strip(content(latex))
                 id = attribute(ce, "id")
-                U = string(map(s -> Char(parse(UInt32, s, 16)), split(id[2:end], "-"))...)
+                U = string(map(s -> Char(parse_hex(UInt32, S)), split(id[2:end], "-"))...)
                 mtch = _contains(L, r"^\\[A-Za-z][A-Za-z0-9]*(\{[A-Za-z0-9]\})?$")
                 disp[] &&
                     println("#", count += 1, "\t", mtch%Int, " id: ", id, "\tU: ", U, "\t", L)
@@ -98,7 +98,7 @@ function add_math_symbols(dpath, fname)
             (isempty(L) || L[1] == '%') && continue
             x = map(s -> rstrip(s, [' ','\t','\n']),
                     split(_replace(L, r"[{}\"]+" => "\t"), "\t"))
-            ch = Char(parse(Int, x[2], 16))
+            ch = Char(parse_hex(UInt32, x[2]))
             nam = String(x[3][2:end])
             startswith(nam, "math") && (nam = nam[5:end])
             if isascii(ch)
