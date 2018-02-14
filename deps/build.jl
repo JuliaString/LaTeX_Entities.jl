@@ -24,7 +24,7 @@ const disp = [false]
 # Get manual additions to the tables
 include("../src/manual_latex.jl")
 
-const datapath = joinpath(Pkg.dir(), "LaTeX_Entities", "data")
+const datapath = joinpath(pkg_dir("LaTeX_Entities"), "data")
 
 const empty_str = ""
 const element_types = ("mathlatex", "AMS", "IEEE", "latex")
