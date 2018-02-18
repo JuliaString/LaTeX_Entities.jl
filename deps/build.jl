@@ -117,18 +117,131 @@ function add_math_symbols(dpath, fname)
     latex_sym, vers, info
 end
 
+#=
+ standard | v7.0  | proposed | type
+----------|-------|----------|------
+mscr	  | scr	  | sc       | script
+msans	  | sans  | ss       | sans-serif
+Bbb       | bb	  | ds       | blackboard / doublestruck
+mfrak     | frak  | fr       | fraktur
+mtt	  | tt	  | tt       | mono
+mit	  | it	  | it       | italic
+mitsans   | isans | is       | italic sans-serif
+mitBbb    | bbi	  | id       | italic blackboard / doublestruct
+mbf	  | bf	  | bd       | bold
+mbfscr	  | bscr  | bc       | bold script
+mbfsans   | bsans | bs       | bold sans-serif
+mbffrak   | bfrak | bf       | bold fraktur
+mbfit	  | bi	  | bi       | bold italic
+mbfitsans | bisans| bis      | bold italic sans-serif
+                  | gr       | greek
+it<greek>         | ig       | italic greek
+bf<greek>         | bg       | bold greek
+bi<greek>	  | big      | bold italic greek
+bsans<greek>	  | bsg      | bold sans-serif greek
+bisans<greek>     | bisg     | bold italic sans-serif greek
+                  | gv       | greek variant
+mitvar<greek>     | iv       | italic greek variant
+mbfvar<greek>     | bv       | bold greek variant
+mbfitvar<greek>	  | biv      | bold italic greek variant
+mbfsansvar<greek> | bsv      | bold sans-serif greek variant
+mbfitsansvar<greek> | bisv   | bold italic sans-serif greek variant
+
+i -> imath                     ı
+=#
+function add_name(dic::Dict, val, nam)
+    if haskey(dic, val)
+        push!(dic[val], nam)
+    else
+        dic[val] = Set((nam,))
+    end
+end
+
+function replace_suffix(dic, val, nam, pref, list)
+    for (suf, rep) in list
+        nam == suf && (add_name(dic, val, pref * suf) ; return true)
+    end
+    false
+end
+
+replace_all(dic, val, nam, grpref, gvpref, digpref) =
+    replace_suffix(dic, val, nam, grpref, greek_letters) ||
+    replace_suffix(dic, val, nam, gvpref, var_greek) ||
+    replace_suffix(dic, val, nam, digpref, digits)
+
+function shorten_names(names::Dict)
+    valtonam = Dict{String,Set{String}}()
+    for (nam, val) in names
+        for (oldnam, newnam) in replace_name
+            nam == oldnam && (nam = newnam)
+        end
+        for (pref, rep) in replace_prefix
+            if startswith(pref, nam)
+                tst = rep * nam[sizeof(pref)+1:end]
+                if haskey(names, tst)
+                    print("Conflict: $nam => $val with prefix replaced ")
+                    println("$tst => $(collect(names[tst]))")
+                else
+                    nam = tst
+                end
+                break
+            end
+        end
+        # Special handling of "up"/"mup" prefixes
+        if startswith("up", nam)
+            oldval = get(names, nam[3:end], "")
+            val == oldval && continue # short form already entered in table
+            oldval == "" && (nam = nam[3:end]) # only add short form of name to set
+        elseif startswith("mup", nam)
+            oldval = get(names, nam[4:end], "")
+            val == oldval && continue # short form already entered in table
+            # See if "up" form already in table with same value
+            oldval = get(names, nam[2:end], "")
+            val == oldval && continue # short form already entered in table
+        end
+        add_name(valtonam, val, nam)
+        # Produce short forms for Greek and numbers
+        siz = sizeof(nam)
+        siz > 3 || continue
+        replace_suffix(valtonam, val, nam, "gr", greek_letters) && continue
+        replace_suffix(valtonam, val, nam, "gv", var_greek) && continue
+        if nam[1] == 'i' && nam[2] == 't'
+            replace_all(valtonam, val, nam[3:end], "ig", "iv", "it") && continue
+        elseif nam[1] == 'b'
+            if nam[2] == 'f'
+                replace_all(valtonam, val, nam[3:end], "bg", "bv", "bf") && continue
+            elseif nam[2] == 's' && siz > 6 && nam[3] == 'a' && nam[4] == 'n' && nam[5] == 's'
+                replace_all(valtonam, val, nam[6:end], "bsg", "bsv", "bs") && continue
+            elseif nam[2] == 'i'
+                if nam[3] == 's' && siz > 7 && nam[4] == 'a' && nam[5] == 'n' && nam[6] == 's'
+                    replace_all(valtonam, val, nam[7:end], "bisg", "bisv", "bis") && continue
+                else
+                    replace_all(valtonam, val, nam[3:end], "big", "biv", "bi") && continue
+                end
+            end
+        end
+    end
+    # Split into two vectors
+    syms = Vector{String}()
+    vals = Vector{String}()
+    for (val, names) in valtonam, nam in names
+        push!(syms, nam)
+        push!(vals, val)
+    end
+    syms, vals
+end
+
 function make_tables()
     sym1, ver1, inf1 = get_math_symbols(dpath, fname)
     sym2, ver2, inf2 = add_math_symbols(lpath, lname)
 
-    latex_sym = [manual_latex, sym1[1], sym2, sym1[2:end]...]
-    et = ("manual", element_types[1], "tex", element_types[2:end]...)
+    latex_sym = [mansym..., sym1[1], sym2, sym1[2:end]...]
+    et = (mantyp..., element_types[1], "tex", element_types[2:end]...)
 
     latex_set = Dict{String,String}()
+    diff_set = Dict{String,Set{String}}()
 
     # Select the first name found, ignore duplicates
-    symnam = String[]
-    symval = String[]
     for (ind, sym_set) in enumerate(latex_sym)
         countdup = 0
         countdiff = 0
@@ -136,17 +249,23 @@ function make_tables()
             old = get(latex_set, nam, "")
             if old == ""
                 push!(latex_set, nam => val)
-                push!(symnam, nam)
-                push!(symval, val)
-            elseif val != old
-                countdiff += 1
-            else
+            elseif val == old
                 countdup += 1
+            else
+                countdiff += 1
+                if haskey(diff_set, nam)
+                    push!(diff_set[nam], val)
+                else
+                    push!(diff_set, nam => Set([old, val]))
+                end
             end
         end
         println(countdup, " duplicates, ", countdiff, " overwritten out of ", length(sym_set),
                 " found in ", et[ind])
     end
+    # Now, replace or remove prefixes and suffixes
+    symnam, symval = shorten_names(latex_set)
+
     println(length(symval), " distinct entities found")
     
     # We want to build a table of all the names, sort them, then create a StrTable out of them

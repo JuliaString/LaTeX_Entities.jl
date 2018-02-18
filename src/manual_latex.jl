@@ -1,7 +1,130 @@
-# Derived from latex_symbols.jl, which is a part of Julia
+# Parly derived from latex_symbols.jl, which is a part of Julia
 # License is MIT: http://julialang.org/license
 
-const manual_latex = [
+const greek_letters =
+    ("Alpha"   => "A",
+     "Beta"    => "B",
+     "Gamma"   => "G",
+     "Delta"   => "D",
+     "Epsilon" => "E",
+     "Zeta"    => "Z",
+     "Eta"     => "H",
+     "Theta"   => "J",
+     "Iota"    => "I",
+     "Kappa"   => "K",
+     "Lambda"  => "L",
+     "Mu"      => "M",
+     "Nu"      => "N",
+     "Xi"      => "X",
+     "Omicron" => "U",
+     "Pi"      => "P",
+     "Rho"     => "R",
+     "Sigma"   => "S",
+     "Tau"     => "T",
+     "Upsilon" => "Y",
+     "Phi"     => "F",
+     "Chi"     => "C",
+     "Psi"     => "W",
+     "Omega"   => "O",
+     "alpha"   => "a",
+     "beta"    => "b",
+     "gamma"   => "g",
+     "delta"   => "d",
+     "epsilon" => "e",
+     "zeta"    => "z",
+     "eta"     => "h",
+     "theta"   => "j",
+     "iota"    => "i",
+     "kappa"   => "k",
+     "lambda"  => "l",
+     "mu"      => "m",
+     "nu"      => "n",
+     "xi"      => "x",
+     "omicron" => "u",
+     "pi"      => "p",
+     "rho"     => "r",
+     "sigma"   => "s",
+     "tau"     => "t",
+     "upsilon" => "y",
+     "phi"     => "f",
+     "chi"     => "c",
+     "psi"     => "w",
+     "omega"   => "o",
+)
+
+const var_greek =
+    ("varTheta"   => "J",
+     "nabla"      => "n",
+     "partial"    => "d", # partial differential
+     "varepsilon" => "e",
+     "varsigma"   => "s",
+     "vartheta"   => "j",
+     "varkappa"   => "k",
+     "varphi"     => "f",
+     "varrho"     => "r",
+     "varpi"      => "p"
+     )
+
+const digits = (
+    "zero"  => "0",
+    "one"   => "1",
+    "two"   => "2",
+    "three" => "3",
+    "four"  => "4",
+    "five"  => "5",
+    "six"   => "6",
+    "seven" => "7",
+    "eight" => "8",
+    "nine"  => "9"
+    )
+
+const replace_prefix = (
+    "APL"       => "",
+    "Elz"       => "",
+    "Elx"       => "",
+    "textascii" => "",
+    "text"      => "",
+    "msans"     => "ss",
+    "Bbb"       => "ds",
+    "mfrak"     => "fr",
+    "mtt"       => "tt",
+    "mitsans"   => "is",
+    "mitBbb"    => "id",
+    "mit"       => "it",
+    "mbfscr"    => "bc",
+    "mbfsans"   => "bs",
+    "mbffrak"   => "bf",
+    "mbfitsans" => "bis",
+    "mbfit"     => "bi",
+    "mbf"       => "bd"
+    )
+
+const v7_0_prefix = (
+    "msans"     => "sans",
+    "Bbb"       => "bb",
+    "mfrak"     => "frak",
+    "mitsans"   => "isans",
+    "mitBbb"    => "bbi",
+    "mbfscr"    => "bscr",
+    "mbfsans"   => "bsans",
+    "mbffrak"   => "bfrak",
+    "mbfitsans" => "bisans",
+    "mbf"       => "bf"
+    )
+
+const replace_name = (
+    "textasciimacron" => "highminus",
+    "textphi"         => "ltphi",
+    "Eulerconst"      => "eulermascheroni",
+    "Hermaphrodite"   => "hermaphrodite",
+    "Planckconst"     => "planck",
+    "bkarow"          => "bkarrow",
+    "dbkarow"         => "dbkarrow",
+    "hksearow"        => "hksearrow",
+    "hkswarow"        => "hksearrow"
+    )
+
+const manual = [
     "cbrt"        => "\u221B", # synonym of \cuberoot
     "mars"        => "♂",      # synonym of \male
     "pprime"      => "″",      # synonym of \dprime
@@ -31,9 +154,11 @@ const manual_latex = [
     "setminus"    => "\u2216",      # ∖ synonym of \smallsetminus
     "circlearrowleft"  => "\u21ba", # ↺ synonym of acwopencirclearrow
     "circlearrowright" => "\u21bb", # ↻ synonym of cwopencirclearrow
-    # "bigsetminus" => "\u29f5",  # add to allow access to standard setminus
+    # "bigsetminus" => "\u29f5",    # add to allow access to standard setminus
+]
 
-    # Vulgar fractions
+# Vulgar fractions
+const fractions = [
     "1/4"  => "¼", # vulgar fraction one quarter
     "1/2"  => "½", # vulgar fraction one half
     "3/4"  => "¾", # vulgar fraction three quarters
@@ -55,8 +180,9 @@ const manual_latex = [
     "1/"   => "⅟", # fraction numerator one
     "0/3"  => "↉", # vulgar fraction zero thirds
     "1/4"  => "¼", # vulgar fraction one quarter
+]
 
-    # Superscripts
+const superscripts = [
     "^0" => "⁰",
     "^1" => "¹",
     "^2" => "²",
@@ -126,8 +252,9 @@ const manual_latex = [
     "^phi" => "ᵠ",
     "^chi" => "ᵡ",
     "^Phi" => "ᶲ",
+]
 
-    # Subscripts
+const subscripts = [
     "_0" => "₀",
     "_1" => "₁",
     "_2" => "₂",
@@ -167,3 +294,6 @@ const manual_latex = [
     "_phi" => "ᵩ",
     "_chi" => "ᵪ"
 ]
+
+const mansym = [manual, fractions, superscripts, subscripts]
+const mantyp = ["manual", "fractions", "superscripts", "subscripts"]
