@@ -150,6 +150,7 @@ mbfitsansvar<greek> | bisv   | bold italic sans-serif greek variant
 i -> imath                     ı
 =#
 function add_name(dic::Dict, val, nam)
+    println("\e[s$val\e[u\e[4C$nam")
     if haskey(dic, val)
         push!(dic[val], nam)
     else
@@ -157,47 +158,48 @@ function add_name(dic::Dict, val, nam)
     end
 end
 
-function replace_suffix(dic, val, nam, pref, list)
+function replace_suffix(dic, val, nam, off, pref, list)
     for (suf, rep) in list
-        nam == suf && (add_name(dic, val, pref * suf) ; return true)
+        nam[off:end] == suf && (add_name(dic, val, pref * suf) ; return true)
     end
     false
 end
 
-replace_all(dic, val, nam, grpref, gvpref, digpref) =
-    replace_suffix(dic, val, nam, grpref, greek_letters) ||
-    replace_suffix(dic, val, nam, gvpref, var_greek) ||
-    replace_suffix(dic, val, nam, digpref, digits)
+replace_all(dic, val, nam, off, grpref, gvpref, digpref) =
+    replace_suffix(dic, val, nam, off, grpref, greek_letters) ||
+    replace_suffix(dic, val, nam, off, gvpref, var_greek) ||
+    replace_suffix(dic, val, nam, off, digpref, digits)
 
 function shorten_names(names::Dict)
     valtonam = Dict{String,Set{String}}()
     for (nam, val) in names
         for (oldnam, newnam) in replace_name
-            nam == oldnam && (nam = newnam)
-        end
-        for (pref, rep) in replace_prefix
-            if startswith(pref, nam)
-                tst = rep * nam[sizeof(pref)+1:end]
-                if haskey(names, tst)
-                    print("Conflict: $nam => $val with prefix replaced ")
-                    println("$tst => $(collect(names[tst]))")
-                else
-                    nam = tst
-                end
-                break
-            end
+            nam == oldnam && (nam = newnam; break)
         end
         # Special handling of "up"/"mup" prefixes
         if startswith("up", nam)
-            oldval = get(names, nam[3:end], "")
-            val == oldval && continue # short form already entered in table
-            oldval == "" && (nam = nam[3:end]) # only add short form of name to set
+            # Add it later when processing "mup" prefix if they have the same value
+            get(names, "m" * nam, "") == val && continue
         elseif startswith("mup", nam)
-            oldval = get(names, nam[4:end], "")
-            val == oldval && continue # short form already entered in table
-            # See if "up" form already in table with same value
-            oldval = get(names, nam[2:end], "")
-            val == oldval && continue # short form already entered in table
+            # If short form in table with same value, continue, otherwise, add short form
+            upval = get(names, nam[2:end], "") # see if "up..." is in the table
+            shortval = get(names, nam[4:end], "") # see if "..." is in the table
+            val == shortval && continue # short name is already in table with same value
+            add_name(valtonam, val, shortval == "" ? nam[4:end] : nam[2:end])
+            continue
+        else
+            for (pref, rep) in replace_prefix
+                if startswith(pref, nam)
+                    tst = rep * nam[sizeof(pref)+1:end]
+                    if haskey(names, tst)
+                        print("Conflict: $nam => $val with prefix replaced ")
+                        println("$tst => $(collect(names[tst]))")
+                    else
+                        nam = tst
+                    end
+                    break
+                end
+            end
         end
         add_name(valtonam, val, nam)
         # Produce short forms for Greek and numbers
