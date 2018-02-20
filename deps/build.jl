@@ -205,20 +205,20 @@ function shorten_names(names::Dict)
         # Produce short forms for Greek and numbers
         siz = sizeof(nam)
         siz > 3 || continue
-        replace_suffix(valtonam, val, nam, "gr", greek_letters) && continue
-        replace_suffix(valtonam, val, nam, "gv", var_greek) && continue
+        replace_suffix(valtonam, val, nam, 1, "gr", greek_letters) && continue
+        replace_suffix(valtonam, val, nam, 1, "gv", var_greek) && continue
         if nam[1] == 'i' && nam[2] == 't'
-            replace_all(valtonam, val, nam[3:end], "ig", "iv", "it") && continue
+            replace_all(valtonam, val, nam, 3, "ig", "iv", "it") && continue
         elseif nam[1] == 'b'
             if nam[2] == 'f'
-                replace_all(valtonam, val, nam[3:end], "bg", "bv", "bf") && continue
+                replace_all(valtonam, val, nam, 3, "bg", "bv", "bf") && continue
             elseif nam[2] == 's' && siz > 6 && nam[3] == 'a' && nam[4] == 'n' && nam[5] == 's'
-                replace_all(valtonam, val, nam[6:end], "bsg", "bsv", "bs") && continue
+                replace_all(valtonam, val, nam, 6, "bsg", "bsv", "bs") && continue
             elseif nam[2] == 'i'
                 if nam[3] == 's' && siz > 7 && nam[4] == 'a' && nam[5] == 'n' && nam[6] == 's'
-                    replace_all(valtonam, val, nam[7:end], "bisg", "bisv", "bis") && continue
+                    replace_all(valtonam, val, nam, 7, "bisg", "bisv", "bis") && continue
                 else
-                    replace_all(valtonam, val, nam[3:end], "big", "biv", "bi") && continue
+                    replace_all(valtonam, val, nam, 3, "big", "biv", "bi") && continue
                 end
             end
         end
