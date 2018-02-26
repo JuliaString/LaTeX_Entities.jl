@@ -78,41 +78,32 @@ const digits = (
     "nine"  => "9"
     )
 
-const replace_prefix = (
-    "APL"       => "",
-    "Elz"       => "",
-    "Elx"       => "",
-    "textascii" => "",
-    "text"      => "",
-    "msans"     => "ss",
-    "Bbb"       => "ds",
-    "mfrak"     => "fr",
-    "mtt"       => "tt",
-    "mitsans"   => "is",
-    "mitBbb"    => "id",
-    "mit"       => "it",
-    "mbfscr"    => "bc",
-    "mbfsans"   => "bs",
-    "mbffrak"   => "bf",
-    "mbfitsans" => "bis",
-    "mbfit"     => "bi",
-    "mbf"       => "bd"
-    )
+const remove_lead_char = "AEt"
+const remove_prefix = ("APL", "Elz", "Elx", "El", "textascii", "text")
 
-const v7_0_prefix = (
-    "msans"     => "sans",
-    "Bbb"       => "bb",
-    "mfrak"     => "frak",
-    "mitsans"   => "isans",
-    "mitBbb"    => "bbi",
-    "mbfscr"    => "bscr",
-    "mbfsans"   => "bsans",
-    "mbffrak"   => "bfrak",
-    "mbfitsans" => "bisans",
-    "mbf"       => "bf"
-    )
+const replace_lead_char = "Bm"
+const replace_prefix =
+    (("Bbb",       "d",   "bb"),	# double-struck or blackboard
+     ("mbfsans",   "sb",  "bsans"),     # bold sans-serif
+     ("mbfscr",    "cb",  "bscr"),	# bold cursive script
+     ("mbffrak",   "fb",  "bfrak"),     # bold fraktur
+     ("mbfitsans", "sib", "bisans"),    # bold italic sans-serif
+     ("mbfit",     "ib",  "bi"),        # bold italic
+     ("mbf",       "b",   "bf"),        # bold
+     ("mfrak",     "f",   "frak"),      # fraktur
+     ("mitsans",   "si",  "isans"),     # italic sans-serif
+     ("mitBbb",    "di",  "bbi"),       # italic double-struck (or blackboard)
+     ("mit",       "i",   "it"),        # italic
+     ("msans",     "s",   "sans"),      # sans-serif
+     ("mscr",      "c",   "scr"),       # cursive script
+     ("mtt",       "t",   "tt")         # teletype (monospaced)
+)
+
+const remove_name = ("Elxsqcup", "Elxuplus", "ElOr", "textTheta", "Elzbar")
 
 const replace_name = (
+    "textasciiacute"  => "textacute",
+    "textasciibreve"  => "textbreve",
     "textasciimacron" => "highminus",
     "textphi"         => "ltphi",
     "Eulerconst"      => "eulermascheroni",
@@ -121,7 +112,7 @@ const replace_name = (
     "bkarow"          => "bkarrow",
     "dbkarow"         => "dbkarrow",
     "hksearow"        => "hksearrow",
-    "hkswarow"        => "hksearrow"
+    "hkswarow"        => "hkswarrow"
     )
 
 const manual = [
@@ -145,16 +136,22 @@ const manual = [
     # Misc. Math and Physics
     "del"         => "∇",      # synonym of \nabla (combining character)
     "sout"        => "\u0336", # synonym of \Elzbar (from ulem package)
+    "strike"      => "\u0336", # synonym of \Elzbar
+    "zbar"        => "\u0336", # synonym of \Elzbar
 
     # Avoid getting "incorrect" synonym
-    "imath"       => "\U1d6a4",     # 𝚤
+    "imath"       => "ı",
+    "jmath"       => "ȷ",
+    "i_imath"     => "\U1d6a4",     # mathematical italic small dotless i
+    "i_jmath"     => "\U1d6a5",     # mathematical italic small dotless j
     "hbar"        => "\u0127",      # ħ synonym of \Elzxh
     "AA"          => "\u00c5",      # Å
     "Upsilon"     => "\u03a5",      # Υ
     "setminus"    => "\u2216",      # ∖ synonym of \smallsetminus
+    "ddot{i}"     => "\u00cf",      # is ddot{\imath} in unicode.xml
+    "bigsetminus" => "\u29f5",      # add to allow access to standard setminus
     "circlearrowleft"  => "\u21ba", # ↺ synonym of acwopencirclearrow
     "circlearrowright" => "\u21bb", # ↻ synonym of cwopencirclearrow
-    # "bigsetminus" => "\u29f5",    # add to allow access to standard setminus
 ]
 
 # Vulgar fractions

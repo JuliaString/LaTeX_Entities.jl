@@ -118,117 +118,187 @@ function add_math_symbols(dpath, fname)
 end
 
 #=
- standard | v7.0  | proposed | type
-----------|-------|----------|------
-mscr	  | scr	  | sc       | script
-msans	  | sans  | ss       | sans-serif
-Bbb       | bb	  | ds       | blackboard / doublestruck
-mfrak     | frak  | fr       | fraktur
-mtt	  | tt	  | tt       | mono
-mit	  | it	  | it       | italic
-mitsans   | isans | is       | italic sans-serif
-mitBbb    | bbi	  | id       | italic blackboard / doublestruct
-mbf	  | bf	  | bd       | bold
-mbfscr	  | bscr  | bc       | bold script
-mbfsans   | bsans | bs       | bold sans-serif
-mbffrak   | bfrak | bf       | bold fraktur
-mbfit	  | bi	  | bi       | bold italic
-mbfitsans | bisans| bis      | bold italic sans-serif
-                  | gr       | greek
-it<greek>         | ig       | italic greek
-bf<greek>         | bg       | bold greek
-bi<greek>	  | big      | bold italic greek
-bsans<greek>	  | bsg      | bold sans-serif greek
-bisans<greek>     | bisg     | bold italic sans-serif greek
-                  | gv       | greek variant
-mitvar<greek>     | iv       | italic greek variant
-mbfvar<greek>     | bv       | bold greek variant
-mbfitvar<greek>	  | biv      | bold italic greek variant
-mbfsansvar<greek> | bsv      | bold sans-serif greek variant
-mbfitsansvar<greek> | bisv   | bold italic sans-serif greek variant
+
+ standard | v7.0    | new   | type
+----------|---------|-------|-------------------------------
+mscr	  | scr	    | c_    | script/cursive
+msans	  | sans    | s_    | sans-serif
+Bbb       | bb	    | d_    | blackboard / doublestruck
+mfrak     | frak    | f_    | fraktur
+mtt	  | tt	    | t_    | mono
+mit	  | it	    | i_    | italic
+mitsans   | isans   | is_   | italic sans-serif
+mitBbb    | bbi	    | id_   | italic blackboard / doublestruct
+mbf	  | bf	    | b_    | bold
+mbfscr	  | bscr    | bc_   | bold script/cursive
+mbfsans   | bsans   | bs_   | bold sans-serif
+mbffrak   | bfrak   | bf_   | bold fraktur
+mbfit	  | bi	    | bi_   | bold italic
+mbfitsans | bisans  | bis_  | bold italic sans-serif
+<greek>             | G     | greek
+it<greek>           | i_G   | italic greek
+bf<greek>           | b_G   | bold greek
+bi<greek>	    | bi_G  | bold italic greek
+bsans<greek>	    | bs_G  | bold sans-serif greek
+bisans<greek>       | bis_G | bold italic sans-serif greek
+var<greek>          | V     | greek variant
+mitvar<greek>       | i_V   | italic greek variant
+mbfvar<greek>       | b_V   | bold greek variant
+mbfitvar<greek>	    | bi_V  | bold italic greek variant
+mbfsansvar<greek>   | bs_V  | bold sans-serif greek variant
+mbfitsansvar<greek> | bis_V | bold italic sans-serif greek variant
 
 i -> imath                     ı
 =#
+function str_chr(val)
+    isempty(val) && return ""
+    io = IOBuffer()
+    for ch in val
+        print(io, hex(ch%UInt32,4), ':')
+    end
+    String(take!(io))[1:end-1]
+end
+
+function str_names(nameset)
+    io = IOBuffer()
+    allnames = sort(collect(nameset))
+    for n in allnames
+        print(io, n, " ")
+    end
+    String(take!(io))
+end
+
 function add_name(dic::Dict, val, nam)
-    println("\e[s$val\e[u\e[4C$nam")
     if haskey(dic, val)
         push!(dic[val], nam)
+        disp[] && println("\e[s$val\e[u\e[4C$(rpad(str_chr(val),20))", str_names(dic[val]))
     else
         dic[val] = Set((nam,))
+        disp[] && println("\e[s$val\e[u\e[4C$(rpad(str_chr(val),20))$nam")
     end
 end
 
-function replace_suffix(dic, val, nam, off, pref, list)
+function check_name(out::Dict, dic::Dict, val, nam, old)
+    oldval = get(dic, nam, "")
+    # Check if short name is already in table with same value
+    oldval == "" && return (add_name(out, val, nam); true)
+    oldval != val && disp[] && println("Conflict: $old => $val, $nam => $oldval")
+    false
+end
+
+function replace_suffix(out, dic, val, nam, suffix, pref, list)
     for (suf, rep) in list
-        nam[off:end] == suf && (add_name(dic, val, pref * suf) ; return true)
+        suffix == suf && return check_name(out, dic, val, pref * rep, nam)
     end
     false
 end
 
-replace_all(dic, val, nam, off, grpref, gvpref, digpref) =
-    replace_suffix(dic, val, nam, off, grpref, greek_letters) ||
-    replace_suffix(dic, val, nam, off, gvpref, var_greek) ||
-    replace_suffix(dic, val, nam, off, digpref, digits)
+#=
+function replace_greek(out, dic, val, nam, off, pref, list)
+    for (suf, rep) in list
+        if nam[off:end] == suf
+            return check_name(out, dic, val, pref * rep, nam) |
+                   check_name(out, dic, val, pref[1:end-1] * suf, nam)
+        end
+    end
+    false
+end
+=#
+
+function replace_all(out, dic, val, nam, suffix, pref)
+#    replace_greek(out, dic, val, nam, off, pref * "G_", greek_letters) ||
+#    replace_greek(out, dic, val, nam, off, pref * "V_", var_greek) ||
+    replace_suffix(out, dic, val, nam, suffix, pref * "_", digits)
+end
 
 function shorten_names(names::Dict)
     valtonam = Dict{String,Set{String}}()
     for (nam, val) in names
-        for (oldnam, newnam) in replace_name
-            nam == oldnam && (nam = newnam; break)
+        # handle combining accents, change from 'accent{X}' to 'X-accent'
+        if !startswith(nam, "math") && sizeof(nam) > 3 &&
+            nam[end]%UInt8 == '}'%UInt8 && nam[end-2]%UInt8 == '{'%UInt8
+            ch = nam[end-1]%UInt8
+            if ch - 'A'%UInt8 < 0x1a || ch - 'a'%UInt8 < 0x1a || ch - '0'%UInt8 < 0xa
+                # tst = string(nam[end-1], '-', nam[1:end-3])
+                # check_name(valtonam, names, val, tst, nam)
+                add_name(valtonam, val, nam)
+                continue
+            end
         end
         # Special handling of "up"/"mup" prefixes
-        if startswith("up", nam)
+        if startswith(nam, "up")
             # Add it later when processing "mup" prefix if they have the same value
             get(names, "m" * nam, "") == val && continue
-        elseif startswith("mup", nam)
+        elseif startswith(nam, "mup")
             # If short form in table with same value, continue, otherwise, add short form
-            upval = get(names, nam[2:end], "") # see if "up..." is in the table
-            shortval = get(names, nam[4:end], "") # see if "..." is in the table
-            val == shortval && continue # short name is already in table with same value
-            add_name(valtonam, val, shortval == "" ? nam[4:end] : nam[2:end])
+            #upval = get(names, nam[2:end], "") # see if "up..." is in the table
+            #val == upval && continue # short name is already in table with same value
+            oldval = get(names, nam[4:end], "") # see if "..." is in the table
+            val == oldval && continue # short name is already in table with same value
+            check_name(valtonam, names, val, oldval == "" ? nam[4:end] : nam[2:end], nam)
             continue
         else
-            for (pref, rep) in replace_prefix
-                if startswith(pref, nam)
-                    tst = rep * nam[sizeof(pref)+1:end]
-                    if haskey(names, tst)
-                        print("Conflict: $nam => $val with prefix replaced ")
-                        println("$tst => $(collect(names[tst]))")
-                    else
-                        nam = tst
-                    end
+            flg = false
+            nam in remove_name && continue
+            for (oldnam, newnam) in replace_name
+                if nam == oldnam
+                    flg = check_name(valtonam, names, val, newnam, nam)
                     break
                 end
             end
-        end
-        add_name(valtonam, val, nam)
-        # Produce short forms for Greek and numbers
-        siz = sizeof(nam)
-        siz > 3 || continue
-        replace_suffix(valtonam, val, nam, 1, "gr", greek_letters) && continue
-        replace_suffix(valtonam, val, nam, 1, "gv", var_greek) && continue
-        if nam[1] == 'i' && nam[2] == 't'
-            replace_all(valtonam, val, nam, 3, "ig", "iv", "it") && continue
-        elseif nam[1] == 'b'
-            if nam[2] == 'f'
-                replace_all(valtonam, val, nam, 3, "bg", "bv", "bf") && continue
-            elseif nam[2] == 's' && siz > 6 && nam[3] == 'a' && nam[4] == 'n' && nam[5] == 's'
-                replace_all(valtonam, val, nam, 6, "bsg", "bsv", "bs") && continue
-            elseif nam[2] == 'i'
-                if nam[3] == 's' && siz > 7 && nam[4] == 'a' && nam[5] == 'n' && nam[6] == 's'
-                    replace_all(valtonam, val, nam, 7, "bisg", "bisv", "bis") && continue
-                else
-                    replace_all(valtonam, val, nam, 3, "big", "biv", "bi") && continue
+            flg && continue
+            if nam[1] in remove_lead_char
+                for pref in remove_prefix
+                    startswith(nam, pref) || continue
+                    flg = true
+                    tst = nam[sizeof(pref)+1:end]
+                    oldval = get(names, tst, "")
+                    oldval == val || (oldval == "" && add_name(valtonam, val, tst))
+                    break
+                end
+            elseif nam[1] in replace_lead_char
+                for (pref, rep, repv7) in replace_prefix
+                    startswith(nam, pref) || continue
+                    suff = nam[sizeof(pref)+1:end]
+                    flg = replace_all(valtonam, names, val, nam, suff, rep)
+                    #=
+                    if rep == "i"
+                        flg = replace_all(valtonam, names, val, suff, "i")
+                    elseif rep == "t" || rep == "d" || rep == "s" || rep == "c"
+                        flg = replace_all(valtonam, names, val, suff, rep)
+                    elseif rep == "" || rep[1] != 'b'
+                    elseif rep == "b"
+                        flg = replace_all(valtonam, names, val, suff, "b")
+                    elseif rep == "sb"
+                        flg = replace_all(valtonam, names, val, suff, "bs")
+                    elseif rep == "ib"
+                        flg = replace_all(valtonam, names, val, suff, "bi")
+                    elseif rep == "cib"
+                        flg = replace_all(valtonam, names, val, suff, "bic")
+                    end
+                    =#
+                    flg || (flg = check_name(valtonam, names, val, rep * "_" * suff, nam))
+                    #check_name(valtonam, names, val, repv7 * nam[sizeof(pref)+1:end], nam)
+                    #flg = true
+                    break
                 end
             end
+            # Add short forms, if not already handled
+            flg && continue
         end
+#            replace_suffix(valtonam, names, val, nam, 1, "G_", greek_letters) ||
+#                replace_suffix(valtonam, names, val, nam, 1, "V_", var_greek)
+        add_name(valtonam, val, nam)
     end
     # Split into two vectors
     syms = Vector{String}()
     vals = Vector{String}()
-    for (val, names) in valtonam, nam in names
-        push!(syms, nam)
-        push!(vals, val)
+    for (val, namset) in valtonam
+        for nam in namset
+            startswith(nam, "math") && length(namset) > 1 && continue
+            push!(syms, nam)
+            push!(vals, val)
+        end
     end
     syms, vals
 end
@@ -265,10 +335,14 @@ function make_tables()
         println(countdup, " duplicates, ", countdiff, " overwritten out of ", length(sym_set),
                 " found in ", et[ind])
     end
+    # Dump out set
+    disp[] && println("LaTeX set:\n", latex_set)
+    disp[] && println("Differences:\n", diff_set)
+
     # Now, replace or remove prefixes and suffixes
     symnam, symval = shorten_names(latex_set)
 
-    println(length(symval), " distinct entities found")
+    disp[] && println(length(symval), " distinct entities found\n", symnam)
     
     # We want to build a table of all the names, sort them, then create a StrTable out of them
     srtnam = sortperm(symnam)
