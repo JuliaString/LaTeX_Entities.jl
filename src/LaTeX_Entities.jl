@@ -35,7 +35,7 @@ end
 
 function __init__()
     global default =
-        LaTeX_Table(StrTables.load(joinpath(pkg_dir("LaTeX_Entities"), "data", "latex.dat"))...)
+        LaTeX_Table(StrTables.load(joinpath(@__DIR__, "../data", "latex.dat"))...)
     nothing
 end
 
