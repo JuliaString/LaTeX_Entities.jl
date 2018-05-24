@@ -1,0 +1,6 @@
+desc = "Entities from LaTeX data tables"
+keywords = ["Entities", "LaTeX"]
+license = "MIT"
+name = "LaTeX_Entities"
+#uuid = "a8aa15d3-c567-5e9f-b6cc-4b0f97f09cf7"
+repo = "https://github.com/JuliaString/LaTeX_Entities.jl.git"
