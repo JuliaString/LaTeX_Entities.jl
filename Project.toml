@@ -6,7 +6,7 @@ name = "LaTeX_Entities"
 repo-rev = ""
 repo-url = "https://github.com/JuliaString/LaTeX_Entities.jl.git"
 uuid = "9927f19a-46ce-5bdd-a20a-f46a78b61e3d"
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 LightXML = "9c8b4983-aa76-5018-a973-4c85ecc9e179"
