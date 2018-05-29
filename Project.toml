@@ -1,15 +1,15 @@
-name = "LaTeX_Entities"
+authors = ["ScottPJones <scottjones@alum.mit.edu>"]
 desc = "Entities from LaTeX data tables"
 keywords = ["Entities", "LaTeX"]
-authors = ["ScottPJones <scottjones@alum.mit.edu>"]
 license = "MIT"
-repo = "https://github.com/JuliaString/LaTeX_Entities.jl.git"
-git-tree-sha1 = "337a4077d930f4ef81a3d4a94cfb7477df0314a6"
+name = "LaTeX_Entities"
+repo-rev = ""
+repo-url = "https://github.com/JuliaString/LaTeX_Entities.jl.git"
 uuid = "9927f19a-46ce-5bdd-a20a-f46a78b61e3d"
-
 version = "0.2.2"
+
 [deps]
-StrTables = "9700d1a9-a7c8-5760-9816-a99fda30bb8f"
 LightXML = "9c8b4983-aa76-5018-a973-4c85ecc9e179"
 Pkg = "fe1c5a76-5840-53d2-82f9-288dd83ce2ce"
+StrTables = "9700d1a9-a7c8-5760-9816-a99fda30bb8f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
