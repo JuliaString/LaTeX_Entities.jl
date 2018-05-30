@@ -1,4 +1,5 @@
-# LaTeX_Entities: Support for using LaTeX entity names for characters
+# LaTeX_Entities
+## Support for using LaTeX entity names for characters
 
 | **Info** | **Windows** | **Linux & MacOS** | **Package Evaluator** | **CodeCov** | **Coveralls** |
 |:------------------:|:------------------:|:---------------------:|:-----------------:|:---------------------:|:-----------------:|
@@ -33,8 +34,6 @@
 [coverall-s-img]: https://coveralls.io/repos/github/JuliaString/LaTeX_Entities.jl/badge.svg
 [coverall-m-img]: https://coveralls.io/repos/github/JuliaString/LaTeX_Entities.jl/badge.svg?branch=master
 
-LaTeX_Entities.jl: 
-====================================================================
 
 This builds tables for looking up LaTeX names and returning the Unicode character(s),
 looking up a character or pair of characters and finding LaTeX names that return it/them,
