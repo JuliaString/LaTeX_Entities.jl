@@ -16,8 +16,8 @@
 [travis-s-img]: https://travis-ci.org/JuliaString/LaTeX_Entities.jl.svg
 [travis-m-img]: https://travis-ci.org/JuliaString/LaTeX_Entities.jl.svg?branch=master
 
-[app-s-url]:    https://ci.appveyor.com/project/ScottPJones/latex_entities-jl
-[app-m-url]:    https://ci.appveyor.com/project/ScottPJones/latex_entities-jl/branch/master
+[app-s-url]:    https://ci.appveyor.com/project/ScottPJones/latex-entities-jl
+[app-m-url]:    https://ci.appveyor.com/project/ScottPJones/latex-entities-jl/branch/master
 [app-s-img]:    https://ci.appveyor.com/api/projects/status/ok2sdq4u5xwlc6b0?svg=true
 [app-m-img]:    https://ci.appveyor.com/api/projects/status/ok2sdq4u5xwlc6b0/branch/master?svg=true
 
