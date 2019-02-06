@@ -393,16 +393,19 @@ function make_tables()
      (ver1, ver2), (inf1, inf2))
 end
 
-println("Creating tables")
-tup = nothing
-try
-    global tup
-    tup = make_tables()
-catch ex
-    println(sprint(showerror, ex, catch_backtrace()))
-end
 savfile = joinpath(datapath, "latex.dat")
-println("Saving tables to ", savfile)
-StrTables.save(savfile, tup[1])
-println("Done")
-
+if isfile(savfile)
+    println("Tables already exist")
+else
+    tup = nothing
+    println("Creating tables")
+    try
+        global tup
+        tup = make_tables()
+    catch ex
+        println(sprint(showerror, ex, catch_backtrace()))
+    end
+    println("Saving tables to ", savfile)
+    StrTables.save(savfile, tup[1])
+    println("Done")
+end
