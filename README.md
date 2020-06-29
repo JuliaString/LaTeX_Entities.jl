@@ -1,10 +1,13 @@
 # LaTeX_Entities
 ## Support for using LaTeX entity names for characters
 
-| **Info** | **Windows** | **Linux & MacOS** | **Package Evaluator** | **CodeCov** | **Coveralls** |
-|:------------------:|:------------------:|:---------------------:|:-----------------:|:---------------------:|:-----------------:|
-| [![][license-img]][license-url] | [![][app-s-img]][app-s-url] | [![][travis-s-img]][travis-url] | [![][pkg-s-img]][pkg-s-url] | [![][codecov-img]][codecov-url] | [![][coverall-s-img]][coverall-s-url]
-| [![][gitter-img]][gitter-url] | [![][app-m-img]][app-m-url] | [![][travis-m-img]][travis-url] | [![][pkg-m-img]][pkg-m-url] | [![][codecov-img]][codecov-url] | [![][coverall-m-img]][coverall-m-url]
+[pkg-url]: https://github.com/JuliaString/LaTeX_Entities.jl.git
+
+[julia-url]:    https://github.com/JuliaLang/Julia
+[julia-release]:https://img.shields.io/github/release/JuliaLang/julia.svg
+
+[release]:      https://img.shields.io/github/release/JuliaString/LaTeX_Entities.jl.svg
+[release-date]: https://img.shields.io/github/release-date/JuliaString/LaTeX_Entities.jl.svg
 
 [license-img]:  http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 [license-url]:  LICENSE.md
@@ -16,24 +19,17 @@
 [travis-s-img]: https://travis-ci.org/JuliaString/LaTeX_Entities.jl.svg
 [travis-m-img]: https://travis-ci.org/JuliaString/LaTeX_Entities.jl.svg?branch=master
 
-[app-s-url]:    https://ci.appveyor.com/project/ScottPJones/latex-entities-jl
-[app-m-url]:    https://ci.appveyor.com/project/ScottPJones/latex-entities-jl/branch/master
-[app-s-img]:    https://ci.appveyor.com/api/projects/status/ok2sdq4u5xwlc6b0?svg=true
-[app-m-img]:    https://ci.appveyor.com/api/projects/status/ok2sdq4u5xwlc6b0/branch/master?svg=true
-
-[pkg-s-url]:    http://pkg.julialang.org/detail/LaTeX_Entities
-[pkg-m-url]:    http://pkg.julialang.org/detail/LaTeX_Entities
-[pkg-s-img]:    http://pkg.julialang.org/badges/LaTeX_Entities_0.6.svg
-[pkg-m-img]:    http://pkg.julialang.org/badges/LaTeX_Entities_0.7.svg
-
 [codecov-url]:  https://codecov.io/gh/JuliaString/LaTeX_Entities.jl
 [codecov-img]:  https://codecov.io/gh/JuliaString/LaTeX_Entities.jl/branch/master/graph/badge.svg
 
-[coverall-s-url]: https://coveralls.io/github/JuliaString/LaTeX_Entities.jl
-[coverall-m-url]: https://coveralls.io/github/JuliaString/LaTeX_Entities.jl?branch=master
-[coverall-s-img]: https://coveralls.io/repos/github/JuliaString/LaTeX_Entities.jl/badge.svg
-[coverall-m-img]: https://coveralls.io/repos/github/JuliaString/LaTeX_Entities.jl/badge.svg?branch=master
+[contrib]:    https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
 
+[![][release]][pkg-url] [![][release-date]][pkg-url] [![][license-img]][license-url] [![contributions welcome][contrib]](https://github.com/JuliaString/LaTeX_Entities.jl/issues)
+
+| **Julia Version** | **Unit Tests** | **Coverage** |
+|:------------------:|:------------------:|:---------------------:|
+| [![][julia-release]][julia-url] | [![][travis-s-img]][travis-url] | [![][codecov-img]][codecov-url]
+| Julia Latest | [![][travis-m-img]][travis-url] | [![][codecov-img]][codecov-url]
 
 This builds tables for looking up LaTeX names and returning the Unicode character(s),
 looking up a character or pair of characters and finding LaTeX names that return it/them,
