@@ -4,7 +4,7 @@ keywords = ["Entities", "LaTeX"]
 license = "MIT"
 name = "LaTeX_Entities"
 uuid = "9927f19a-46ce-5bdd-a20a-f46a78b61e3d"
-version = "1.0.0"
+version = "1.0.1"
 
 [deps]
 StrTables = "9700d1a9-a7c8-5760-9816-a99fda30bb8f"

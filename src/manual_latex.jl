@@ -109,10 +109,6 @@ const replace_name = (
     "Eulerconst"      => "eulermascheroni",
     "Hermaphrodite"   => "hermaphrodite",
     "Planckconst"     => "planck",
-    "bkarow"          => "bkarrow",
-    "dbkarow"         => "dbkarrow",
-    "hksearow"        => "hksearrow",
-    "hkswarow"        => "hkswarrow"
     )
 
 const manual = [
@@ -152,6 +148,14 @@ const manual = [
     "bigsetminus" => "\u29f5",      # add to allow access to standard setminus
     "circlearrowleft"  => "\u21ba", # ↺ synonym of acwopencirclearrow
     "circlearrowright" => "\u21bb", # ↻ synonym of cwopencirclearrow
+
+    "ohm"         => "Ω",
+    "leq"         => "≤",  # synonym of le
+    "geq"         => "≥",  # synonym of ge
+    "bbsemi"      => "⨟",
+    "ith"         => "ℎ",  # mathematical italic small h (planck constant)
+    "tricolon"    => "⁝",  # tricolon
+    "join"        => "⨝",  # synonym of Join
 ]
 
 # Vulgar fractions
@@ -249,6 +253,10 @@ const superscripts = [
     "^phi" => "ᵠ",
     "^chi" => "ᵡ",
     "^Phi" => "ᶲ",
+
+    "^uparrow" => "ꜛ",
+    "^downarrow" => "ꜜ",
+    "^!" => "ꜝ",
 ]
 
 const subscripts = [
