@@ -1,6 +1,6 @@
 using StrTables, LaTeX_Entities
 
-@static VERSION < v"0.7.0-DEV" ? (using Base.Test) : (using Test)
+using Test
 
 const def = LaTeX_Entities.default
 
